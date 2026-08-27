@@ -24,7 +24,7 @@ def get_queue():
         print(f"Queue API 통신 오류: {e}")
         return []
 
-def calculate_multiplier(prediction_history, created_at_ms, selected_team, winner_team, assumed_win_rate):
+def calculate_multiplier(created_at_ms, selected_team, winner_team, assumed_win_rate):
     """
     참가자의 베팅 시간과 승리 팀을 바탕으로 배율을 계산합니다.
     """
@@ -37,8 +37,6 @@ def calculate_multiplier(prediction_history, created_at_ms, selected_team, winne
     
     # [예시 로직] 승률에 따른 배율 적용 아이디어 반영
     # assumed_win_rate = find_win_rate_at(prediction_history, created_at_ms)
-    assumed_win_rate = 40  # 임시 테스트용 가상의 승률 (40%)
-
     if assumed_win_rate <= 20:
         return 2.0
     elif assumed_win_rate <= 40:
@@ -72,7 +70,7 @@ def clear_queue():
         print(f"Queue 초기화 API 통신 오류: {e}")
         return None
 
-def process_match_end(winner_team, prediction_history, assume_win_rate):
+def process_match_end(winner_team, assume_win_rate):
     """경기가 종료되었을 때 실행되는 메인 정산 프로세스"""
     print(f"\n=== 경기 종료! 승리 팀: [{winner_team}] ===")
 
@@ -92,7 +90,6 @@ def process_match_end(winner_team, prediction_history, assume_win_rate):
                 continue
 
             multiplier = calculate_multiplier(
-                prediction_history, 
                 player["created_at_ms"], 
                 player["selected_team"], 
                 winner_team,
@@ -119,11 +116,6 @@ def process_match_end(winner_team, prediction_history, assume_win_rate):
 
 # --- 실제 실행 부분 (테스트) ---
 if __name__ == "__main__":
-    # 게임 중 수집된 승률 변동 기록 (예시)
-    # 실제로는 실시간으로 기록된 리스트나 딕셔너리가 들어갑니다.
-    dummy_prediction_history = [] 
-    
-    # 경기가 끝나고 승리 팀이 'red'로 결정되었다고 가정하고 정산 실행
     assume_win_rate = 50
     while True:
         actual_winner = input('승리 팀 입력(red/blue) : ')
@@ -133,4 +125,4 @@ if __name__ == "__main__":
         assume_win_rate = int(input('예상 승률 입력(백분율) : '))
         break
     
-    process_match_end(actual_winner, dummy_prediction_history, assume_win_rate)
+    process_match_end(actual_winner, assume_win_rate)

@@ -1,6 +1,5 @@
 import requests
 import main
-import sys
 
 BASE_URL = "http://yh6un.ddns.net:8000"
 API_KEY = "booth-api-key"
@@ -41,7 +40,7 @@ def give_points(nickname, delta):
             names.append(user['nickname'])
         if nickname in names:
             print('Error; 현재 베팅 중인 플레이어입니다.')
-            sys.exit()
+            return False
         requests.post(f'{BASE_URL}/api/users/{nickname}/points/adjust', json=payload, headers=HEADERS)
         print(f'성공적으로 {nickname}님의 포인트를 조정했습니다! (변화율: {delta})')
     except Exception as e:
@@ -57,7 +56,7 @@ if __name__ == "__main__":
         
         # 1. 유저 정보 먼저 확인
         if get_user_info(target_user) == None:
-            sys.exit()
+            continue
 
         delta = int(input('조정 포인트 입력(+지급, -차감) : '))
 
