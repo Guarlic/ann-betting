@@ -24,7 +24,7 @@ def get_queue():
         print(f"Queue API 통신 오류: {e}")
         return []
 
-def calculate_multiplier(prediction_history, created_at_ms, selected_team, winner_team):
+def calculate_multiplier(prediction_history, created_at_ms, selected_team, winner_team, assumed_win_rate):
     """
     참가자의 베팅 시간과 승리 팀을 바탕으로 배율을 계산합니다.
     """
@@ -72,7 +72,7 @@ def clear_queue():
         print(f"Queue 초기화 API 통신 오류: {e}")
         return None
 
-def process_match_end(winner_team, prediction_history):
+def process_match_end(winner_team, prediction_history, assume_win_rate):
     """경기가 종료되었을 때 실행되는 메인 정산 프로세스"""
     print(f"\n=== 경기 종료! 승리 팀: [{winner_team}] ===")
 
@@ -95,7 +95,8 @@ def process_match_end(winner_team, prediction_history):
                 prediction_history, 
                 player["created_at_ms"], 
                 player["selected_team"], 
-                winner_team
+                winner_team,
+                assume_win_rate
             )
 
             result = apply_points(nickname, multiplier)
@@ -123,11 +124,13 @@ if __name__ == "__main__":
     dummy_prediction_history = [] 
     
     # 경기가 끝나고 승리 팀이 'red'로 결정되었다고 가정하고 정산 실행
+    assume_win_rate = 50
     while True:
         actual_winner = input('승리 팀 입력(red/blue) : ')
         if actual_winner not in ['red','blue']:
             print('승리 팀 이름 잘못됨; 오탈자 확인 바람.')
             continue
+        assume_win_rate = int(input('예상 승률 입력(백분율) : '))
         break
     
-    process_match_end(actual_winner, dummy_prediction_history)
+    process_match_end(actual_winner, dummy_prediction_history, assume_win_rate)
